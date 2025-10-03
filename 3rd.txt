@@ -1,0 +1,14 @@
+!pip install transformers pillow torch --upgrade
+
+from transformers import pipeline
+import soundfile as sf
+import torch
+MODEL = "facebook/musicgen-small"
+device = 0 if torch.cuda.is_available() else -1
+synthesizer = pipeline("text-to-audio", model=MODEL, device=device)
+prompt = input("enter a music description: ")
+audio_result = synthesizer(prompt, forward_params={"max_new_tokens": 250})
+audio_array = audio_result["audio"][0]   
+sampling_rate = audio_result["sampling_rate"]
+sf.write("output_music.wav", audio_array.T, sampling_rate)  
+print("Generated music saved as output_music.wav")
